@@ -20,12 +20,12 @@ from pemfc_init import pars, SV_0
 
 solution = solve_ivp(residual,pars.time_span,SV_0,rtol=1e-4, atol=1e-6)
 
-
+# TEMPORARY.  Eventually, return the results to an encompassing function that 
+#   calculates the polarization curve and saves the outputs.
 # Some initial plotting to make sure it works:
 from matplotlib import pyplot as plt
 for var in solution.y:
     plt.plot(solution.t,var)
     
 plt.legend(['Anode double layer','Cathode double layer'])
-
 plt.show()
