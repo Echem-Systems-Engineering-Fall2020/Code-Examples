@@ -52,10 +52,11 @@ def residual(t,SV):
 
 
     "========CATHODE==========="
-    eta_ca = SV[3] - pars.delta_Phi_eq_ca
+    " THIS SHOULD EVENTUALLY DEPEND ON SPECIES ACTIVITIES. "
+    eta_ca = SV[ptr.phi_dl_ca] - pars.delta_Phi_eq_ca
     i_Far_ca = pars.i_o_ca*(exp(-pars.n_ca*F*pars.beta_ca*eta_ca/R/pars.T)
                       - exp(pars.n_ca*F*(1-pars.beta_ca)*eta_ca/R/pars.T))
     i_dl_ca = pars.i_ext - i_Far_ca
     
-    dSV_dt[3] = -i_dl_ca/pars.C_dl_ca
+    dSV_dt[ptr.phi_dl_ca] = -i_dl_ca/pars.C_dl_ca
     return dSV_dt
