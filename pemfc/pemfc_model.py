@@ -16,10 +16,10 @@
 # Import necessary modules:
 from scipy.integrate import solve_ivp #integration function for ODE system.
 from pemfc_function import residual # point the model to the residual function
-from pemfc_init import pars, SV_0
+from pemfc_init import pars, SV_0, ptr
 
-solution = solve_ivp(residual, pars.time_span, SV_0, rtol=1e-5, atol=1e-7, 
-    method='BDF')
+solution = solve_ivp(lambda t, y: residual(t, y, pars, ptr), pars.time_span, 
+    SV_0, rtol=1e-5, atol=1e-7, method='BDF')
 
 # TEMPORARY.  Eventually, return the results to an encompassing function that 
 #   calculates the polarization curve and saves the outputs.
@@ -28,5 +28,4 @@ from matplotlib import pyplot as plt
 for var in solution.y:
     plt.plot(solution.t,var)
     
-plt.legend(['Anode double layer','Cathode double layer'])
 plt.show()

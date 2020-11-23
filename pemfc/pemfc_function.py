@@ -6,14 +6,13 @@
             dSV_dt: time derivative of solution vector variables SV.
 """
 import numpy as np
-from pemfc_init import pars, ptr
 from math import exp
 
 # Constants:
 F = 96485    # Faraday's constant, C/mol of equivalent
 R = 8.3145   # Universal gas constant, J/mol-K
 
-def residual(t,SV):
+def residual(t, SV, pars, ptr):
     print(t)
     # Initialize the residual: must be the exact same size as SV.  Initialize 
     #   as all zeros; that way, a variable will not change with time, if we do 
