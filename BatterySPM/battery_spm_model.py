@@ -1,1 +1,0 @@
-""" Battery single particle model."""
