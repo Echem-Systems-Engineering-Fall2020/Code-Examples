@@ -7,7 +7,7 @@
 import numpy as np
 
 """ BEGIN USER INPUTS """
-
+save_tag = 'porosity_study'
 i_ext = 10000  # External current (A/m2)
 
 t_final = 100000

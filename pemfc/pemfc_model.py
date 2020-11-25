@@ -13,19 +13,27 @@
             integration, which can be processed as needed to plot or analyze any quantities of interest.
 """
 
-# Import necessary modules:
-from scipy.integrate import solve_ivp #integration function for ODE system.
-from pemfc_function import residual # point the model to the residual function
-from pemfc_init import pars, SV_0, ptr
+def pemfc_model(i_ext=None):
+    # Import necessary modules:
+    from scipy.integrate import solve_ivp #integration function for ODE system.
+    from pemfc_function import residual # point the model to the residual function
+    from pemfc_init import pars, SV_0, ptr
 
-solution = solve_ivp(lambda t, y: residual(t, y, pars, ptr), pars.time_span, 
-    SV_0, rtol=1e-5, atol=1e-7, method='BDF')
+    # Parse and overwrite any variables passed to the function call:
+    if i_ext:
+        pars.i_ext = i_ext
 
-# TEMPORARY.  Eventually, return the results to an encompassing function that 
-#   calculates the polarization curve and saves the outputs.
-# Some initial plotting to make sure it works:
-from matplotlib import pyplot as plt
-for var in solution.y:
-    plt.plot(solution.t,var)
-    
-plt.show()
+    # The use of the 'lambda' function is required here so that we can pass the 
+    #   class variablels 'pars' and 'ptr.'  Otherwise, we can only pass the 
+    #   time span and our initial solution SV_0:
+    solution = solve_ivp(lambda t, y: residual(t, y, pars, ptr),
+        pars.time_span, SV_0, rtol=1e-9, atol=1e-7, method='BDF')
+
+    # Return the solution results to whatever routine called the function:
+    return solution
+
+
+# If you want to run this as a script, doing one-off simulations, this will 
+#    call the pemfc_model function, above
+if __name__ == '__main__':
+    pemfc_model()
