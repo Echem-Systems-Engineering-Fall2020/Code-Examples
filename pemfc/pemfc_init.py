@@ -31,6 +31,7 @@ Pt_surf_frac = 0.1 # Fraction of carbon surface covered by Pt in CL.
 
 dy_GDL = 100e-6 # GDL thickness (m)
 dy_CL = 20e-6   # CL thickness (m)
+npoints_CL_an = 1  # Number of finite volumes/mesh points in anode CL
 
 # Carbon particle diameter:
 d_part_GDL = 5e-6 # m
@@ -49,8 +50,8 @@ phi_ca_0 = 1.1
 C_dl_an = 1e2 # F/m2
 C_dl_ca = 1e2 # F/m2
 
-i_o_an = 2.5e-3
-i_o_ca = 1e-3
+i_o_an = 2.5e-1
+i_o_ca = 1e-1
 
 n_an = -2.
 n_ca = 4
@@ -71,12 +72,15 @@ delta_Phi_eq_ca = 0.55
 
 
 "============ INITIALIZE SOLUTION VECTOR ============"
-C_k_an_CL_0 = P_an_0*X_k_an_0/R/T
+C_k_an_0 = P_an_0*X_k_an_0/R/T
 
 
 # Construct initial solution vector
-SV_0 = np.hstack((np.array([phi_an_0 - phi_elyte_0]), C_k_an_CL_0, C_k_an_CL_0,
-    np.array([phi_ca_0 - phi_elyte_0])))
+SV_0_GDL_an = C_k_an_0
+SV_0_CL_an = np.tile(np.hstack((np.array([phi_an_0 - phi_elyte_0]),C_k_an_0)),
+    npoints_CL_an)
+SV_0_ca = np.array([phi_ca_0 - phi_elyte_0])
+SV_0 = np.hstack((SV_0_GDL_an, SV_0_CL_an, SV_0_ca))
 
 # Construct class containing all parameters.  Mostly we are just copying the 
 #   variable names from the user inputs into the class structure:
@@ -96,7 +100,8 @@ class pars:
     C_dl_an = C_dl_an
 
     dy_GDL = dy_GDL
-    dy_CL = dy_CL
+    dy_CL = dy_CL/npoints_CL_an
+    npoints_CL_an = npoints_CL_an
 
     eps_g_dy_Inv_CL = 1/dy_CL/eps_gas_CL
     eps_g_dy_Inv_GDL = 1/dy_GDL/eps_gas_GDL
@@ -135,13 +140,18 @@ class pars:
 # Create a 'pointer' class that specifies where in SV certain variables are 
 #    stored:
 class ptr:
-    phi_dl_an = 0
     
     # C_k in anode GDL: starts just after phi_dl, is same size as X_k_an:
-    C_k_an_GDL = np.arange(phi_dl_an+1, phi_dl_an+1+X_k_an_0.shape[0])
+    C_k_an_GDL = np.arange(0, X_k_an_0.shape[0])
     
     # C_k in anode CL: starts just after GDL, is same size as X_k_an:
-    C_k_an_CL = np.arange(C_k_an_GDL[-1]+1, C_k_an_GDL[-1]+1+X_k_an_0.shape[0])
+    phi_dl_an = np.empty((npoints_CL_an),int)
+    C_k_an_CL = np.empty((npoints_CL_an, X_k_an_0.shape[0]),int)
+    nvars_an_CL = 1+X_k_an_0.shape[0]
+    
+    for j in np.arange(npoints_CL_an):
+        phi_dl_an[j] = C_k_an_GDL[-1] + 1 + j*nvars_an_CL
+        C_k_an_CL[j,:] = np.arange(phi_dl_an[j]+1, phi_dl_an[j]+1+X_k_an_0.shape[0])
     
     # phi_dl_ca: starts just after C_k_an_CL:
-    phi_dl_ca = C_k_an_CL[-1] + 1
+    phi_dl_ca = C_k_an_CL[-1,-1] + 1

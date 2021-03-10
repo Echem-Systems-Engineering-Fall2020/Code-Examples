@@ -16,14 +16,16 @@
 def pemfc_model(i_ext=None, temp=None):
     # Import necessary modules:
     from scipy.integrate import solve_ivp #integration function for ODE system.
-    from pemfc_function import residual # point the model to the residual function
-    from pemfc_init import pars, SV_0, ptr
+    from pemfc_function import residual # point to the residual function
+
+    # Import the initial solution, parameters, and pointer structures:
+    from pemfc_init import SV_0, pars, ptr
 
     # Parse and overwrite any variables passed to the function call:
     if i_ext:
         pars.i_ext = i_ext
     if temp:
-        # Adjust concentrations in SV_0:
+        # Adjust ideal gas concentrations in SV_0:
         SV_0[ptr.C_k_an_GDL] *= pars.T/temp
         SV_0[ptr.C_k_an_CL] *= pars.T/temp
         # Overwrite temperature:
