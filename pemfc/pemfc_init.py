@@ -31,7 +31,7 @@ Pt_surf_frac = 0.1 # Fraction of carbon surface covered by Pt in CL.
 
 dy_GDL = 100e-6 # GDL thickness (m)
 dy_CL = 20e-6   # CL thickness (m)
-npoints_CL_an = 1  # Number of finite volumes/mesh points in anode CL
+npoints_CL_an = 3  # Number of finite volumes/mesh points in anode CL
 
 # Carbon particle diameter:
 d_part_GDL = 5e-6 # m
