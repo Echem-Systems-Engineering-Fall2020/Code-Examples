@@ -4,7 +4,7 @@ from pemfc_init import ptr
 
 def polarization(T=None):
     print("Temperature = ", T, " K")
-    i_array = np.linspace(1,20000,25)
+    i_array = np.linspace(0.01,20000,25)
     V_cell = np.zeros_like(i_array)
 
     for j, current in enumerate(i_array):
