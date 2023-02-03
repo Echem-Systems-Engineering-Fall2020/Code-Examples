@@ -43,14 +43,13 @@ def residual(t, SV, pars, ptr):
         # Change in double layer potential per time:
         dSV_dt[ptr.phi_dl_an[j]] = -i_dl/pars.C_dl_an
 
+        # Gas properties used in flux calculations:
         gas_props = {'T':pars.T, 'D_k':pars.D_k_g_an, 'mu':pars.mu_g_an}
 
-        # 'Next' node gas phase
-
-        # Read the state in the first CL node, save as state s2:
+        # Read the state in the next CL node, save as state s2:
         s2, eta_2 = read_state(SV, ptr, pars, 'cl_an', j+1)
         
-        # Calculate fluxes between states 1 and 2:
+        # Calculate fluxes between nodes 1 and 2:
         N_k_o = pemfc_gas_flux(s1, s2, gas_props)
         
         # Change in catalyst layer gas phase mole fractions:
@@ -72,7 +71,7 @@ def residual(t, SV, pars, ptr):
     dSV_dt[ptr.phi_dl_an[j]] = -i_dl/pars.C_dl_an
     
     # Change in catalyst layer gas phase mole fractions:
-    dCk_dt = (N_k_i - N_k_o + sdot_k*pars.A_fac_Pt)*pars.eps_g_dy_Inv_CL
+    dCk_dt = (N_k_i + sdot_k*pars.A_fac_Pt)*pars.eps_g_dy_Inv_CL
     dSV_dt[ptr.C_k_an_CL[j,:]] = dCk_dt
 
     "========CATHODE==========="
